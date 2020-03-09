@@ -8,11 +8,18 @@ import model.entities.Department;
 
 public class DepartmentService {
 	
+	DepartmentDao dao = DaoFactory.createDepartmentDao();
+	
 	public List<Department> findAll(){
-		List<Department> list;
-		DepartmentDao dao = DaoFactory.createDepartmentDao();
-		list = dao.findAll();
-		return list;
+		return dao.findAll();
+	}
+	
+	public void saveOrUpdate(Department entity) {
+		if(entity.getId() == null) {
+			dao.insert(entity);
+		} else {
+			dao.update(entity);			
+		}
 	}
 
 }
