@@ -85,5 +85,4 @@ public class DepartmentListController implements Initializable {
 			Alerts.showAlert("IO Excpetion", "Error loading view", e.getMessage(), AlertType.ERROR);
 		}
 	}
-
 }
