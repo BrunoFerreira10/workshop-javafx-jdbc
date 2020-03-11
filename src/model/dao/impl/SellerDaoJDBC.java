@@ -1,6 +1,7 @@
 package model.dao.impl;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,9 +13,6 @@ import com.mysql.jdbc.Statement;
 
 import db.DB;
 import db.DbException;
-
-import java.sql.PreparedStatement;
-
 import model.dao.SellerDao;
 import model.entities.Department;
 import model.entities.Seller;
@@ -185,7 +183,7 @@ public class SellerDaoJDBC implements SellerDao {
 		obj.setName(rs.getString("Name"));
 		obj.setEmail(rs.getString("Email"));
 		obj.setBaseSalary(rs.getDouble("BaseSalary"));
-		obj.setBirthDate(rs.getDate("BirthDate"));
+		obj.setBirthDate(new java.util.Date(rs.getTimestamp("BirthDate").getTime()));
 		obj.setDepartment(department);
 		return obj;
 	}
