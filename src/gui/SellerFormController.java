@@ -1,9 +1,11 @@
 package gui;
 
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -136,8 +138,8 @@ public class SellerFormController implements Initializable {
 			datePickerBirthDate
 					.setValue(LocalDate.ofInstant(entity.getBirthDate().toInstant(), ZoneId.systemDefault()));
 		textFieldBaseSalary.setText(String.format("%.2f", entity.getBaseSalary()));
-		
-		if(entity.getDepartment() == null)
+
+		if (entity.getDepartment() == null)
 			comboBoxDepartment.getSelectionModel().selectFirst();
 		else
 			comboBoxDepartment.setValue(entity.getDepartment());
@@ -148,12 +150,37 @@ public class SellerFormController implements Initializable {
 		ValidationException validationException = new ValidationException("Validation error.");
 
 		Seller entity = new Seller();
+		// Id
 		entity.setId(Utils.tryParseToInt(textFieldId.getText()));
-
+		
+		// Name
 		if (textFieldName.getText() == null || textFieldName.getText().trim().equals(""))
 			validationException.addError("name", "Field can't be empty.");
 		entity.setName(textFieldName.getText());
+		
+		// Email
+		if (textFieldEmail.getText() == null || textFieldEmail.getText().trim().equals(""))
+			validationException.addError("email", "Field can't be empty.");
+		entity.setEmail(textFieldEmail.getText());
+		
+		// BirthDate
+		if(datePickerBirthDate.getValue() == null) {
+			validationException.addError("birthDate", "Field can't be empty.");
+		}	
+		else {
+			Instant instant = Instant.from(datePickerBirthDate.getValue().atStartOfDay(ZoneId.systemDefault()));
+			entity.setBirthDate(Date.from(instant));
+		}	
+		
+		// BaseSalary
+		if (textFieldBaseSalary.getText() == null || textFieldBaseSalary.getText().trim().equals(""))
+			validationException.addError("baseSalary", "Field can't be empty.");
+		entity.setBaseSalary(Utils.tryParseToDouble(textFieldBaseSalary.getText()));
+		
+		//Department
+		entity.setDepartment(comboBoxDepartment.getValue());
 
+		// Validation
 		if (validationException.getErrors().size() > 0) {
 			throw validationException;
 		}
@@ -170,10 +197,13 @@ public class SellerFormController implements Initializable {
 	private void setErrorMessages(Map<String, String> errors) {
 		Set<String> fields = errors.keySet();
 
-		if (fields.contains("name"))
-			lblErrorName.setText(errors.get("name"));
+		lblErrorName.setText(fields.contains("name") ? errors.get("name") : "");
+		lblErrorEmail.setText(fields.contains("email") ? errors.get("email") : "");
+		lblErrorBirthDate.setText(fields.contains("birthDate") ? errors.get("birthDate") : "");
+		lblErrorBaseSalary.setText(fields.contains("baseSalary") ? errors.get("baseSalary") : "");		
+		
 	}
-	
+
 	public void loadAssociatedObjects() {
 		if (departmentService == null)
 			throw new IllegalStateException("Department service was null!");
